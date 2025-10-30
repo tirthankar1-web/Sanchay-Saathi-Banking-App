@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Risk Management | Sanchay Saathi</title>
+
+  <!-- icons + Chart.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .header {
+            padding: 1.5rem 0 5rem 0;
+            background-color: var(--lightBg);
+            
+        }
+
+    .header {
+            margin-bottom: 1.5rem;
+        }
+    :root{
+      --primary:#3f79f3; --lightBg:#f7f8fa; --white:#fff;
+      --mediumGray:#777; --radius:10px; --positive:#16a34a; --negative:#ef4444;
+    }
+    body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial; margin:0; background:var(--lightBg); color:#222;}
+    .container{max-width:1100px;margin:28px auto;padding:0 16px;}
+    header.header{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+    .logo-text{font-weight:700;color:var(--primary);font-size:1.15rem;}
+    nav.desktop-nav a{margin-left:14px;text-decoration:none;color:#333;}
+    .page-title{font-size:1.4rem;font-weight:700;margin-bottom:0.25rem;}
+    .page-sub{color:var(--mediumGray);margin-bottom:18px;}
+
+    .card{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(10,10,10,0.04);}
+    .top-row{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+    .wallet-box{flex:1;min-width:200px;background:linear-gradient(135deg,#3f79f3,#7114d0);color:#fff;padding:14px;border-radius:8px;}
+    .wallet-label{opacity:0.9;font-size:0.9rem;}
+    .wallet-val{font-size:1.5rem;font-weight:700;margin-top:6px;}
+
+    .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+    .form-input{padding:8px 10px;border-radius:8px;border:1px solid #e6e7eb;font-size:0.95rem;width:180px;}
+    .btn{padding:9px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600;}
+    .btn-primary{background:var(--primary);color:#fff;}
+    .btn-outline{background:transparent;border:1px solid #e6e7eb;color:#333;}
+
+    .chart-wrap{height:320px;}
+    .legend-row{display:flex;gap:12px;align-items:center;margin-top:10px;}
+    .legend-item{display:flex;gap:8px;align-items:center}
+
+    .bank-risk{margin-top:12px;}
+    .bank-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f2f4;}
+    .bank-item:last-child{border-bottom:none;}
+    .note{font-size:0.9rem;color:var(--mediumGray);}
+
+    @media(min-width:860px){ .top-row .card{flex:1} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="logo-icon"><i class="ri-line-chart-fill" style="font-size:22px;color:var(--primary)"></i></div>
+        <div class="logo-text">Sanchay<span style="color:#7114d0">Saathi</span></div>
+      </div>
+      <nav class="desktop-nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="add-money.html">Add Money</a>
+        <a href="insights.html">Insights</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1 class="page-title">Risk Management</h1>
+      <p class="page-sub">Estimate risk and suggested allocation for major Indian banks using your wallet balance + monthly salary.</p>
+
+      <div class="card top-row">
+        <div class="wallet-box">
+          <div class="wallet-label">Current Wallet Balance</div>
+          <div class="wallet-val" id="rmWalletBalance">₹0.00</div>
+          <div style="margin-top:8px;font-size:0.85rem;color:rgba(255,255,255,0.9)">This reads the same wallet used on Add Money & Dashboard.</div>
+        </div>
+
+        <div style="min-width:260px" class="card">
+          <div style="font-weight:700;margin-bottom:6px">Monthly Salary</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="rmMonthlySalary" class="form-input" type="number" placeholder="Enter monthly salary (₹)">
+            <button id="saveSalaryBtn" class="btn btn-primary">Save</button>
+            <button id="importSalaryBtn" class="btn btn-outline" title="Try to import saved monthly salary">Import</button>
+          </div>
+          <div style="margin-top:10px" class="note">Monthly investment potential is 10% of salary (recommended).</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+          <div style="font-weight:700">Risk vs Allocation (Suggested)</div>
+          <div class="controls">
+            <label style="font-size:0.9rem;color:var(--mediumGray);">Total investable:</label>
+            <div id="investableAmount" style="font-weight:700">₹0.00</div>
+            <button id="recalculateBtn" class="btn btn-primary">Recalculate</button>
+          </div>
+        </div>
+
+        <div class="chart-wrap card" style="margin-top:12px;">
+          <canvas id="riskChart"></canvas>
+        </div>
+
+        <div class="legend-row">
+          <div class="legend-item"><span style="width:12px;height:12px;background:#3f79f3;display:inline-block;border-radius:2px"></span> Suggested Allocation</div>
+          <div class="legend-item"><span style="width:12px;height:12px;background:#ef4444;display:inline-block;border-radius:2px"></span> Risk Score (%)</div>
+        </div>
+
+        <div class="bank-risk" id="bankRiskList" aria-live="polite">
+          <!-- list populated by JS -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:8px">How the score is computed</div>
+        <p class="note">
+          The page computes an investable amount = <strong>wallet balance</strong> + <strong>monthly potential (10% of salary)</strong>.
+          For each bank we combine a simple base-risk factor (based on typical large-bank stability) with an exposure ratio (how large the suggested allocation is relative to investable amount).
+          This is for guidance only — not financial advice.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // --- Utility helpers ---
+    const fmt = (n) => '₹' + Number(n || 0).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+    // Banks considered (you can extend this list)
+    const banks = [
+      { id:'SBI', name:'State Bank of India', baseRisk: 0.18, note: 'Large PSU — lower credit risk, high liquidity; watch govt/sector regulations.' },
+      { id:'HDFC', name:'HDFC Bank', baseRisk: 0.22, note: 'Large private bank — strong loan book historically; monitor asset quality and credit growth.' },
+      { id:'ICICI', name:'ICICI Bank', baseRisk: 0.24, note: 'Private bank with wide retail presence; exposure to corporate credit cycles matters.' },
+      { id:'Axis', name:'Axis Bank', baseRisk: 0.27, note: 'Moderate-large private bank — somewhat higher risk vs top tier; watch NPA trends.' },
+      { id:'Kotak', name:'Kotak Mahindra Bank', baseRisk: 0.29, note: 'Smaller market cap vs top two; growth focus can increase volatility.' }
+    ];
+
+    // Chart placeholders
+    let riskChart = null;
+
+    // Read wallet balance from sessionStorage (same key used in add-money and dashboard).
+    function readWalletBalance(){
+      try{
+        const b = sessionStorage.getItem('walletBalance');
+        return b ? parseFloat(b) : 0;
+      }catch(e){
+        console.warn('wallet read error', e);
+        return 0;
+      }
+    }
+
+    // Save monthly salary to sessionStorage (key: monthlySalary)
+    function saveMonthlySalary(val){
+      try{
+        sessionStorage.setItem('monthlySalary', String(val));
+      }catch(e){ console.warn(e) }
+    }
+
+    function readMonthlySalary(){
+      try{
+        const s = sessionStorage.getItem('monthlySalary');
+        return s ? parseFloat(s) : 0;
+      }catch(e){ return 0; }
+    }
+
+    // Core computation: investable = wallet + monthlyPotential (10% of salary)
+    function computeInvestable(wallet, monthlySalary){
+      const monthlyPotential = (monthlySalary || 0) * 0.10;
+      return { investable: (wallet || 0) + monthlyPotential, monthlyPotential };
+    }
+
+    // Suggested allocation weights (adjust if you want different distribution)
+    const weights = { 'SBI':0.25, 'HDFC':0.22, 'ICICI':0.20, 'Axis':0.18, 'Kotak':0.15 };
+
+    // Compute suggested allocations and risk scores
+    function computeBankMetrics(investable){
+      const allocations = [];
+      for(const b of banks){
+        const alloc = (weights[b.id] || 0.15) * investable;
+        // exposure ratio between 0..1 (cap small values)
+        const exposureRatio = investable > 0 ? Math.min(1, alloc / investable) : 0;
+        // risk score = baseRisk + exposureRatio * 0.6 (scale to percent)
+        const riskScore = Math.min(1, b.baseRisk + exposureRatio * 0.6);
+        allocations.push({
+          id: b.id,
+          name: b.name,
+          alloc,
+          riskScore: Math.round(riskScore * 100), // percent
+          note: b.note
+        });
+      }
+      return allocations;
+    }
+
+    // Render bank list textual details
+    function renderBankList(metrics){
+      const container = document.getElementById('bankRiskList');
+      container.innerHTML = '';
+      for(const m of metrics){
+        const div = document.createElement('div');
+        div.className = 'bank-item';
+        div.innerHTML = `
+          <div>
+            <div style="font-weight:700">${m.name} <span style="color:var(--mediumGray);font-size:0.9rem">(${m.id})</span></div>
+            <div class="note">${m.note}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">${fmt(m.alloc)}</div>
+            <div style="color:${m.riskScore > 50 ? 'var(--negative)' : 'var(--positive)'}">Risk: ${m.riskScore}%</div>
+          </div>
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    // Render Chart.js bar chart (two datasets: allocation & risk)
+    function renderChart(metrics){
+      const ctx = document.getElementById('riskChart').getContext('2d');
+
+      const labels = metrics.map(m => m.id);
+      const allocationData = metrics.map(m => Number(m.alloc.toFixed(2)));
+      const riskData = metrics.map(m => m.riskScore);
+
+      if(riskChart) { riskChart.destroy(); riskChart = null; }
+
+      riskChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Suggested Allocation (₹)',
+              data: allocationData,
+              backgroundColor: '#3f79f3',
+              yAxisID: 'y'
+            },
+            {
+              label: 'Risk Score (%)',
+              data: riskData,
+              backgroundColor: '#ef4444',
+              yAxisID: 'yPercent'
+            }
+          ]
+        },
+        options: {
+          responsive:true,
+          interaction:{mode:'index', intersect:false},
+          scales: {
+            y: {
+              type: 'linear',
+              position: 'left',
+              ticks: { callback: val => '₹' + Number(val).toLocaleString('en-IN') },
+              grid: { color: '#f3f4f6' }
+            },
+            yPercent: {
+              type: 'linear',
+              position: 'right',
+              max: 100,
+              min: 0,
+              ticks: { callback: val => val + '%' },
+              grid: { display:false }
+            }
+          },
+          plugins: { legend: { position: 'top' } }
+        }
+      });
+    }
+
+    // Update UI (read wallet & salary)
+    function updateUI(){
+      const wallet = readWalletBalance();
+      document.getElementById('rmWalletBalance').textContent = fmt(wallet);
+
+      // try to populate monthly salary input if stored
+      const storedSalary = readMonthlySalary();
+      if(storedSalary && !document.getElementById('rmMonthlySalary').value) {
+        document.getElementById('rmMonthlySalary').value = storedSalary;
+      }
+
+      const monthlySalary = parseFloat(document.getElementById('rmMonthlySalary').value) || storedSalary || 0;
+      const { investable, monthlyPotential } = computeInvestable(wallet, monthlySalary);
+
+      document.getElementById('investableAmount').textContent = fmt(investable) + (monthlyPotential>0 ? ` (includes ₹${monthlyPotential.toFixed(2)} monthly potential)` : '');
+
+      // compute metrics and render
+      const metrics = computeBankMetrics(investable);
+      renderBankList(metrics);
+      renderChart(metrics);
+    }
+
+    // hook up buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      // if a salary was entered earlier in add-money.html and saved to sessionStorage, Import will pick it
+      document.getElementById('importSalaryBtn').addEventListener('click', () => {
+        const ms = readMonthlySalary();
+        if(ms && ms > 0) {
+          document.getElementById('rmMonthlySalary').value = ms;
+          alert('Imported saved monthly salary from your session.');
+        } else {
+          alert('No saved monthly salary found. Enter it manually here (or in Add Money page).');
+        }
+      });
+
+      document.getElementById('saveSalaryBtn').addEventListener('click', () => {
+        const v = parseFloat(document.getElementById('rmMonthlySalary').value) || 0;
+        if(!v || v <= 0){ alert('Enter a valid monthly salary first'); return; }
+        saveMonthlySalary(v);
+        alert('Monthly salary saved for this session.');
+        updateUI();
+      });
+
+      document.getElementById('recalculateBtn').addEventListener('click', updateUI);
+
+      // initial render
+      updateUI();
+    });
+
+    // Keep page in sync if another page updates walletBalance in same tab (sessionStorage change)
+    window.addEventListener('storage', (ev) => {
+      if(ev.key === 'walletBalance' || ev.key === 'monthlySalary') updateUI();
+    });
+  </script>
+</body>
+</html>

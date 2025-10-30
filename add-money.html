@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Money | Sanchay Saathi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .add-money {
+            padding: 1.5rem 0 5rem 0;
+            background-color: var(--lightBg);
+            min-height: 100vh;
+        }
+
+        .add-money-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .add-money-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-money-subtitle {
+            color: var(--mediumGray);
+            font-size: 0.875rem;
+        }
+
+        .add-money-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .add-money-card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .wallet-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .wallet-balance {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .wallet-label {
+            color: var(--mediumGray);
+            font-size: 0.875rem;
+        }
+
+        .salary-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--lightGray);
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .calculation-results {
+            background-color: var(--lightBg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            color: var(--mediumGray);
+        }
+
+        .result-value {
+            font-weight: 600;
+        }
+
+        .result-highlight {
+            border-top: 1px solid var(--lightGray);
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .amount-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .amount-option {
+            background-color: var(--lightBg);
+            border: 1px solid var(--lightGray);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .amount-option:hover {
+            border-color: var(--primary);
+        }
+
+        .amount-option.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .amount-value {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .amount-description {
+            font-size: 0.75rem;
+            color: var(--mediumGray);
+        }
+
+        .custom-amount {
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-methods {
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .payment-option {
+            background-color: var(--lightBg);
+            border: 1px solid var(--lightGray);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .payment-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-name {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .transaction-history {
+            margin-top: 2rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--lightBg);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-type {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-date {
+            font-size: 0.75rem;
+            color: var(--lightGray);
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            color: var(--positive);
+        }
+
+        .transaction-amount.withdrawal {
+            color: var(--negative);
+        }
+
+        .tips-list .transaction-item {
+            align-items: flex-start;
+        }
+
+        .tips-list .transaction-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            background-color: var(--lightBg);
+        }
+
+        @media (min-width: 768px) {
+            .add-money-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .amount-options {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .payment-options {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="ri-line-chart-fill"></i>
+                </div>
+                <h1 class="logo-text">Sanchay<span class="accent">Saathi</span></h1>
+            </div>
+            <nav class="desktop-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="insights.html" class="nav-link">Insights</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+            </nav>
+            <button id="mobile-menu-btn" class="mobile-menu-btn">
+                <i class="ri-menu-line"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div id="mobile-nav" class="mobile-nav">
+        <a href="index.html" class="mobile-nav-link">Home</a>
+        <a href="dashboard.html" class="mobile-nav-link">Dashboard</a>
+        <a href="insights.html" class="mobile-nav-link">Insights</a>
+        <a href="profile.html" class="mobile-nav-link">Profile</a>
+    </div>
+
+    <!-- Add Money Page -->
+    <main class="add-money">
+        <div class="container">
+            <div class="add-money-header">
+                <h1 class="add-money-title">Add Money to Wallet</h1>
+                <p class="add-money-subtitle">Fund your investment wallet and start growing your wealth</p>
+            </div>
+
+            <div class="add-money-grid">
+                <div>
+                    <!-- Wallet Summary -->
+                    <div class="add-money-card">
+                        <div class="wallet-summary">
+                            <div class="wallet-balance" id="walletBalance">₹0.00</div>
+                            <div class="wallet-label">Current Wallet Balance</div>
+                        </div>
+
+                        <!-- Salary Input Form -->
+                        <div class="salary-form">
+                            <h2 class="portfolio-title" style="margin-bottom: 1rem;">Salary Information</h2>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Salary (₹)</label>
+                                <input type="number" class="form-input" id="monthlySalary"
+                                    placeholder="Enter your monthly salary" min="0">
+                            </div>
+
+                            <div class="calculation-results" id="calculationResults" style="display: none;">
+                                <div class="result-item">
+                                    <span class="result-label">Daily Income:</span>
+                                    <span class="result-value" id="dailyIncome">₹0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Recommended 10% Investment:</span>
+                                    <span class="result-value" id="recommendedInvestment">₹0.00</span>
+                                </div>
+                                <div class="result-item result-highlight">
+                                    <span class="result-label">Monthly Investment Potential:</span>
+                                    <span class="result-value" id="monthlyPotential">₹0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Amount Selection -->
+                        <div class="amount-selection">
+                            <h2 class="portfolio-title" style="margin-bottom: 1rem;">Select Amount</h2>
+                            <div class="amount-options">
+                                <div class="amount-option" data-amount="100">
+                                    <div class="amount-value">₹100</div>
+                                    <div class="amount-description">Quick add</div>
+                                </div>
+                                <div class="amount-option" data-amount="500">
+                                    <div class="amount-value">₹500</div>
+                                    <div class="amount-description">Starter pack</div>
+                                </div>
+                                <div class="amount-option" data-amount="1000">
+                                    <div class="amount-value">₹1,000</div>
+                                    <div class="amount-description">Popular choice</div>
+                                </div>
+                                <div class="amount-option" data-amount="5000">
+                                    <div class="amount-value">₹5,000</div>
+                                    <div class="amount-description">Premium</div>
+                                </div>
+                            </div>
+
+                            <div class="custom-amount">
+                                <div class="form-group">
+                                    <label class="form-label">Or enter custom amount</label>
+                                    <input type="number" class="form-input" id="customAmount" placeholder="Enter amount"
+                                        min="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="payment-methods">
+                            <h2 class="portfolio-title" style="margin-bottom: 1rem;">Payment Method</h2>
+                            <div class="payment-options">
+                                <div class="payment-option" data-method="upi">
+                                    <div class="payment-icon">
+                                        <i class="ri-bank-card-line"></i>
+                                    </div>
+                                    <div class="payment-name">UPI</div>
+                                </div>
+                                <div class="payment-option" data-method="card">
+                                    <div class="payment-icon">
+                                        <i class="ri-credit-card-line"></i>
+                                    </div>
+                                    <div class="payment-name">Card</div>
+                                </div>
+                                <div class="payment-option" data-method="netbanking">
+                                    <div class="payment-icon">
+                                        <i class="ri-bank-line"></i>
+                                    </div>
+                                    <div class="payment-name">Net Banking</div>
+                                </div>
+                                <div class="payment-option" data-method="wallet">
+                                    <div class="payment-icon">
+                                        <i class="ri-wallet-3-line"></i>
+                                    </div>
+                                    <div class="payment-name">Wallet</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary btn-lg" id="addMoneyBtn" style="width: 100%;">
+                            Add Money
+                            <i class="ri-arrow-right-line"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- Transaction History -->
+                    <div class="add-money-card">
+                        <h2 class="portfolio-title" style="margin-bottom: 1rem;">Recent Transactions</h2>
+                        <div class="transaction-history" id="transactionHistory">
+                            <!-- Transactions will be added here dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Investment Tips -->
+                    <div class="add-money-card" style="margin-top: 1.5rem;">
+                        <h2 class="portfolio-title" style="margin-bottom: 1rem;">Smart Investing Tips</h2>
+                        <div class="tips-list">
+                            <div class="transaction-item">
+                                <div class="transaction-icon">
+                                    <i class="ri-lightbulb-flash-line" style="color: var(--neutral);"></i>
+                                </div>
+                                <div class="transaction-info">
+                                    <div class="transaction-type">Invest consistently</div>
+                                    <div class="transaction-date">Regular small investments outperform occasional large
+                                        ones</div>
+                                </div>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="transaction-icon">
+                                    <i class="ri-line-chart-line" style="color: var(--positive);"></i>
+                                </div>
+                                <div class="transaction-info">
+                                    <div class="transaction-type">10% Rule</div>
+                                    <div class="transaction-date">Investing 10% of income builds wealth steadily over
+                                        time</div>
+                                </div>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="transaction-icon">
+                                    <i class="ri-time-line" style="color: var(--primary);"></i>
+                                </div>
+                                <div class="transaction-info">
+                                    <div class="transaction-type">Start early</div>
+                                    <div class="transaction-date">The power of compounding works best with time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav">
+        <a href="dashboard.html">
+            <i class="ri-dashboard-line"></i>
+            Dashboard
+        </a>
+        <a href="insights.html">
+            <i class="ri-line-chart-line"></i>
+            Insights
+        </a>
+        <a href="add-money.html" class="active">
+            <i class="ri-add-circle-fill"></i>
+        </a>
+        <a href="#">
+            <i class="ri-pie-chart-line"></i>
+            Invest
+        </a>
+        <a href="profile.html">
+            <i class="ri-user-line"></i>
+            Profile
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        // ===== WALLET MANAGER =====
+        const WalletManager = {
+            getBalance: function() {
+                try {
+                    const balance = sessionStorage.getItem('walletBalance');
+                    return balance ? parseFloat(balance) : 0;
+                } catch (e) {
+                    console.error('Error getting wallet balance:', e);
+                    return 0;
+                }
+            },
+            
+            setBalance: function(amount) {
+                try {
+                    sessionStorage.setItem('walletBalance', amount.toString());
+                    return true;
+                } catch (e) {
+                    console.error('Error setting wallet balance:', e);
+                    return false;
+                }
+            },
+            
+            addMoney: function(amount) {
+                const currentBalance = this.getBalance();
+                const newBalance = currentBalance + parseFloat(amount);
+                this.setBalance(newBalance);
+                return newBalance;
+            },
+            
+            formatBalance: function(amount) {
+                return `₹${parseFloat(amount).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`;
+            },
+            
+            updateDisplay: function() {
+                const balance = this.getBalance();
+                const element = document.getElementById('walletBalance');
+                if (element) {
+                    element.textContent = this.formatBalance(balance);
+                }
+            }
+        };
+
+        // ===== PAGE INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize wallet balance display
+            WalletManager.updateDisplay();
+
+            // Monthly salary input handler
+            const monthlySalaryInput = document.getElementById('monthlySalary');
+            const calculationResults = document.getElementById('calculationResults');
+
+            monthlySalaryInput.addEventListener('input', function () {
+                const monthlySalary = parseFloat(this.value) || 0;
+
+                if (monthlySalary > 0) {
+                    const dailyIncome = monthlySalary / 30;
+                    const recommendedInvestment = dailyIncome * 0.1;
+                    const monthlyPotential = recommendedInvestment * 30;
+
+                    document.getElementById('dailyIncome').textContent = `₹${dailyIncome.toFixed(2)}`;
+                    document.getElementById('recommendedInvestment').textContent = `₹${recommendedInvestment.toFixed(2)}`;
+                    document.getElementById('monthlyPotential').textContent = `₹${monthlyPotential.toFixed(2)}`;
+
+                    calculationResults.style.display = 'block';
+                    document.getElementById('customAmount').min = recommendedInvestment.toFixed(2);
+                } else {
+                    calculationResults.style.display = 'none';
+                }
+            });
+
+            // Amount option selection
+            const amountOptions = document.querySelectorAll('.amount-option');
+            const customAmountInput = document.getElementById('customAmount');
+            let selectedAmount = 0;
+
+            amountOptions.forEach(option => {
+                option.addEventListener('click', function () {
+                    amountOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedAmount = parseFloat(this.dataset.amount);
+                    customAmountInput.value = '';
+                });
+            });
+
+            // Custom amount input handler
+            customAmountInput.addEventListener('input', function () {
+                const customAmount = parseFloat(this.value) || 0;
+
+                if (customAmount > 0) {
+                    amountOptions.forEach(opt => opt.classList.remove('selected'));
+                    selectedAmount = customAmount;
+
+                    const monthlySalary = parseFloat(monthlySalaryInput.value) || 0;
+                    if (monthlySalary > 0) {
+                        const dailyIncome = monthlySalary / 30;
+                        const recommendedInvestment = dailyIncome * 0.1;
+
+                        if (customAmount < recommendedInvestment) {
+                            this.setCustomValidity(`Minimum investment should be at least 10% of your daily income (₹${recommendedInvestment.toFixed(2)})`);
+                        } else {
+                            this.setCustomValidity('');
+                        }
+                    }
+                }
+            });
+
+            // Payment method selection
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            let selectedPaymentMethod = '';
+
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function () {
+                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPaymentMethod = this.dataset.method;
+                });
+            });
+
+            // Add money button handler
+            document.getElementById('addMoneyBtn').addEventListener('click', function () {
+                const monthlySalary = parseFloat(monthlySalaryInput.value) || 0;
+
+                // Validation
+                if (monthlySalary <= 0) {
+                    Toastify({
+                        text: "Please enter your monthly salary first",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                        stopOnFocus: true
+                    }).showToast();
+                    monthlySalaryInput.focus();
+                    return;
+                }
+
+                if (selectedAmount <= 0) {
+                    Toastify({
+                        text: "Please select or enter an amount to add",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                        stopOnFocus: true
+                    }).showToast();
+                    return;
+                }
+
+                if (!selectedPaymentMethod) {
+                    Toastify({
+                        text: "Please select a payment method",
+                        duration: 3000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                        stopOnFocus: true
+                    }).showToast();
+                    return;
+                }
+
+                const dailyIncome = monthlySalary / 30;
+                const recommendedInvestment = dailyIncome * 0.1;
+
+                if (selectedAmount < recommendedInvestment) {
+                    Toastify({
+                        text: `For optimal wealth building, we recommend investing at least 10% of your daily income (₹${recommendedInvestment.toFixed(2)})`,
+                        duration: 4000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "linear-gradient(to right, #ffa726, #ff9800)",
+                        stopOnFocus: true
+                    }).showToast();
+                    return;
+                }
+
+                // Add money to wallet using WalletManager
+                const newBalance = WalletManager.addMoney(selectedAmount);
+                WalletManager.updateDisplay();
+
+                // Add to transaction history
+                const transactionHistory = document.getElementById('transactionHistory');
+                const now = new Date();
+                const transactionDate = now.toLocaleString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const newTransaction = document.createElement('div');
+                newTransaction.className = 'transaction-item';
+                newTransaction.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-type">Wallet Top-up</div>
+                        <div class="transaction-date">${transactionDate}</div>
+                    </div>
+                    <div class="transaction-amount">+₹${selectedAmount.toLocaleString('en-IN')}</div>
+                `;
+
+                transactionHistory.insertBefore(newTransaction, transactionHistory.firstChild);
+
+                // Show success notifications
+                Toastify({
+                    text: `✅ Successfully added ${WalletManager.formatBalance(selectedAmount)} to your wallet!`,
+                    duration: 5000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                    stopOnFocus: true
+                }).showToast();
+
+                setTimeout(() => {
+                    Toastify({
+                        text: `💰 Your new wallet balance is ${WalletManager.formatBalance(newBalance)}`,
+                        duration: 4000,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "linear-gradient(to right, #2193b0, #6dd5ed)",
+                        stopOnFocus: true
+                    }).showToast();
+                }, 1000);
+
+                // Reset form
+                amountOptions.forEach(opt => opt.classList.remove('selected'));
+                paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                customAmountInput.value = '';
+                selectedAmount = 0;
+                selectedPaymentMethod = '';
+            });
+        });
+    </script>
+</body>
+
+</html>
